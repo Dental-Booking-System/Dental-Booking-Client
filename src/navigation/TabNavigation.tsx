@@ -6,6 +6,7 @@ import documentLogo from '../assets/TabNavigationIcons/documentLogo.svg';
 import calendarLogo from '../assets/TabNavigationIcons/calendarLogo.svg';
 import priceLogo from '../assets/TabNavigationIcons/priceLogo.svg';
 import accountLogo from '../assets/TabNavigationIcons/accountLogo.svg';
+import {colors} from "../theme/colors.ts";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,7 +17,7 @@ function TabNavigation() {
             headerShown: false,
             tabBarStyle: {
                 position: 'absolute',
-                height: 95,
+                height: 85,
                 borderRadius: 25,
                 ...styles.shadow
             },
@@ -24,7 +25,7 @@ function TabNavigation() {
                 let IconComponent;
                 let IconLabel;
                 let labelColor = '#B4B4B4';
-                let width = 38, height = 38;
+                let width = 33, height = 33;
                 switch (route.name) {
                     case 'Home':
                         IconComponent = homeLogo;
@@ -37,7 +38,7 @@ function TabNavigation() {
                     case 'Calendar':
                         IconComponent = calendarLogo;
                         color = '#FFFF';
-                        labelColor = '#FF986C';
+                        labelColor = colors.primary;
                         IconLabel = 'Đặt lịch hẹn';
                         break;
                     case 'Price':
@@ -52,7 +53,7 @@ function TabNavigation() {
                         break;
                 }
 
-                if (IconComponent != calendarLogo && focused) labelColor = '#FF986C';
+                if (IconComponent != calendarLogo && focused) labelColor = colors.primary;
                 return (
                     IconComponent == calendarLogo ?
                         <View style={styles.calendarLabelContainer}>
@@ -67,7 +68,7 @@ function TabNavigation() {
                         </View>
                 )
             },
-            tabBarActiveTintColor: '#FF986C',
+            tabBarActiveTintColor: colors.primary,
             tabBarInactiveTintColor: '#B4B4B4',
             tabBarShowLabel: false,
         })}
@@ -83,13 +84,13 @@ function TabNavigation() {
 
 const styles = StyleSheet.create({
     shadow: {
-        shadowColor: '#7F5DF0',
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 100,
+            height: -1,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.5,
+        shadowOpacity: 0.03,
+        shadowRadius: 8,
         elevation: 5
     },
 
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
 
     tabContainer: {
         alignItems: 'center',
-        paddingTop: 12,
+        paddingTop: 15,
         gap: 1,
     },
 
@@ -111,12 +112,13 @@ const styles = StyleSheet.create({
     },
 
     calendarBackground: {
-        backgroundColor: '#FF986C',
+        backgroundColor: colors.primary,
         borderRadius: 50,
         width: 60,
         height: 60,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 5
     },
 
     calendarTabLabel: {
