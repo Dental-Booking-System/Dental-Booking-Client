@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, ViewStyle} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import HeaderScheduleIcon from "../../assets/headerScheduleIcon.svg";
 import {colors} from "../../theme/colors.ts";
 import PhoneHeaderIcon from "../../assets/phoneHeaderIcon.svg";

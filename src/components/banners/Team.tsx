@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     teamContainer: {
         flexDirection: 'column',
         paddingHorizontal: '4%',
-        gap: 12
+        gap: 15
     },
 
     teamTitle: {

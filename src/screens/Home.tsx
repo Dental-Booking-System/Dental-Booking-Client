@@ -1,21 +1,11 @@
 import {
     View,
-    Text,
-    Image,
-    Button,
     StyleSheet,
-    ActivityIndicator,
-    SafeAreaView,
-    ViewStyle,
     ScrollView
 } from 'react-native';
-import {colors} from "../theme/colors.ts";
-import PhoneHeaderIcon from "../assets/phoneHeaderIcon.svg";
-import HeaderScheduleIcon from "../assets/headerScheduleIcon.svg";
 import Hero from "../components/banners/Hero.tsx"
 import ServicesContainer from "../components/banners/ServicesContainer.tsx";
 import Team from "../components/banners/Team.tsx";
-
 
 function Home() {
     return (
