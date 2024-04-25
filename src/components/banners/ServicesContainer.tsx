@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: '3.5%',
         paddingVertical: '2%',
         justifyContent: 'space-between',
-        height: '27%',
+        height: '24%',
         bottom: '38.5%',
         backgroundColor: 'white',
         borderRadius: 30,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     },
 
     serviceColumnContainer: {
-        width: 85,
+        width: 80,
         flexDirection: 'column',
         justifyContent: 'space-evenly',
     },

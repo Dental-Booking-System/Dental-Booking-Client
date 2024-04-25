@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
 
     scrollViewContainer: {
         flex: 1,
-        height: 160,
+        height: 175,
         paddingBottom: '3%'
     },
 

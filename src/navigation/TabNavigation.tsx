@@ -1,17 +1,22 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Home from "../screens/Home.tsx";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import homeLogo from '../assets/TabNavigationIcons/homeLogo.svg';
 import documentLogo from '../assets/TabNavigationIcons/documentLogo.svg';
 import calendarLogo from '../assets/TabNavigationIcons/calendarLogo.svg';
 import priceLogo from '../assets/TabNavigationIcons/priceLogo.svg';
 import accountLogo from '../assets/TabNavigationIcons/accountLogo.svg';
 import {colors} from "../theme/colors.ts";
-import Appointment from "../screens/Appointment.tsx";
+import React, {useState} from "react";
 
 const Tab = createBottomTabNavigator();
 
-function TabNavigation() {
+type Props = {
+    toggleSheet: () => void
+}
+
+function TabNavigation(props: Props) {
+
     return (
       <Tab.Navigator
         screenOptions={ ({ route }) => ({
@@ -58,9 +63,11 @@ function TabNavigation() {
                 return (
                     IconComponent == calendarLogo ?
                         <View style={styles.calendarLabelContainer}>
-                            <View style={styles.calendarBackground}>
-                                {IconComponent ? <IconComponent width={40} height={40} fill={color}/> : null}
-                            </View>
+                            <TouchableOpacity onPress={props.toggleSheet}>
+                                <View style={styles.calendarBackground}>
+                                    {IconComponent ? <IconComponent width={40} height={40} fill={color}/> : null}
+                                </View>
+                            </TouchableOpacity>
                             <Text style={{...styles.calendarTabLabel, color: labelColor}}>{IconLabel}</Text>
                         </View> :
                         <View style={styles.tabContainer}>
@@ -75,7 +82,7 @@ function TabNavigation() {
         })}
       >
           <Tab.Screen name="Home" component={Home}/>
-          <Tab.Screen name="Document" component={Appointment}/>
+          <Tab.Screen name="Document" component={Home}/>
           <Tab.Screen
               listeners={{
                   tabPress: e => {
@@ -83,7 +90,7 @@ function TabNavigation() {
                   }
               }}
               name="Calendar"
-              component={Appointment}/>
+              component={Home}/>
           <Tab.Screen name="Price" component={Home}/>
           <Tab.Screen name="Account" component={Home}/>
       </Tab.Navigator>
