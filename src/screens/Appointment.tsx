@@ -1,6 +1,7 @@
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import CloseIcon from "../assets/closeIcon.svg";
 import {colors} from "../theme/colors.ts";
+import DateTimePicker from "../components/DateTimePicker.tsx";
 
 type Props = {
     toggleSheet?: () => void
@@ -31,7 +32,7 @@ function Appointment(props: Props) {
                 style={styles.scrollViewContainer}
                 contentContainerStyle={styles.scrollViewContentContainer}
             >
-
+                <DateTimePicker />
 
             </ScrollView>
         </View>
@@ -44,8 +45,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         paddingHorizontal: '5%',
         paddingTop: "8%",
-        // borderWidth: 1,
-        // borderColor: 'red',
     },
 
     appointmentHeader: {
@@ -55,7 +54,6 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         flexDirection: "row",
         gap: 80,
-        // borderWidth: 1
     },
 
     closeIcon: {
@@ -63,9 +61,9 @@ const styles = StyleSheet.create({
     },
 
     scrollViewContainer: {
-        borderWidth: 1,
+        // borderWidth: 1,
         height: "90%",
-        bottom: "10%"
+        bottom: "8%"
     },
 
     scrollViewContentContainer: {
