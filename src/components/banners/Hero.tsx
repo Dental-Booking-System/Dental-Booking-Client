@@ -1,9 +1,7 @@
-import {SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import HeaderScheduleIcon from "../../assets/headerScheduleIcon.svg";
 import {colors} from "../../theme/colors.ts";
 import PhoneHeaderIcon from "../../assets/phoneHeaderIcon.svg";
-import {normalize} from "../../utilities/scale.tsx";
-import {SafeAreaProvider} from "react-native-safe-area-context";
 
 function HeroHeader() {
     let width = 30, height = 30;
@@ -36,25 +34,27 @@ function HeroHeader() {
 function Hero() {
     return (
         <View style={styles.heroContainer}>
-            {/*<HeroHeader />*/}
-            {/*<Text style={styles.addressContainer}>*/}
-            {/*    233 Nguyễn Thiện Thuật, Phường 1, Quận 3, TP. HCM*/}
-            {/*</Text>*/}
+            <HeroHeader />
+            <Text style={styles.addressContainer}>
+                233 Nguyễn Thiện Thuật, Phường 1, Quận 3, TP. HCM
+            </Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     heroContainer: {
-        borderWidth: 2,
-        flex: 1,
-        borderColor: 'green',
-
+        height: '35%',
+        borderRadius: 40,
+        backgroundColor: colors.primary,
+        alignItems: 'flex-start',
+        justifyContent: 'center',
     },
 
     heroHeaderContainer: {
         flexDirection: 'row',
-        borderWidth: 1
+        paddingHorizontal: '4%',
+        bottom: '14%'
     },
 
     heroHeaderWord: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 8.8,
         paddingLeft: '6%',
-        bottom: '90%'
+        bottom: '17%'
     }
 })
 
