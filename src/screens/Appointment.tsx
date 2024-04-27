@@ -21,10 +21,14 @@ function Appointment(props: Props) {
                 >Đặt lịch hẹn</Text>
                 <TouchableOpacity
                     onPress={props.toggleSheet}
+                    style={{
+                        height: "70%",
+                        paddingTop: "2%",
+                    }}
                 >
                     <CloseIcon width={25} height={25}
                                style={styles.closeIcon}
-                               fill={colors.third}
+                               fill={'#545454'}
                     />
                 </TouchableOpacity>
             </View>
@@ -33,8 +37,17 @@ function Appointment(props: Props) {
                 contentContainerStyle={styles.scrollViewContentContainer}
             >
                 <DateTimePicker />
+                <View style={styles.patientContainer}>
+                {/*    service, name, age, phone, additional detail*/}
+                    <View style={styles.nameContainer}>
 
+                    </View>
+                    <View style={styles.ageContainer}>
+
+                    </View>
+                </View>
             </ScrollView>
+
         </View>
     )
 }
@@ -57,7 +70,7 @@ const styles = StyleSheet.create({
     },
 
     closeIcon: {
-        marginBottom: '-50%',
+
     },
 
     scrollViewContainer: {
@@ -67,6 +80,17 @@ const styles = StyleSheet.create({
     },
 
     scrollViewContentContainer: {
+    },
+
+    patientContainer: {
+        borderWidth: 1,
+        height: '40%'
+    },
+    nameContainer: {
+        borderWidth: 1
+    },
+    ageContainer: {
+        borderWidth: 1
     }
 })
 
