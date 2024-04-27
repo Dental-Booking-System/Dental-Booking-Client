@@ -21,7 +21,7 @@ function BottomSheet(props : Props) {
         <Animated.View
             style={[styles.bottomSheetContainer, props.style]}
             entering={SlideInDown.springify().damping(15)}
-            exiting={SlideOutDown}
+            exiting={SlideOutDown.duration(400)}
         >
             <GestureDetector gesture={props.gesture} >
                 <View style={styles.bottomSheetHeader}>

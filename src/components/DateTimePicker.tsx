@@ -169,7 +169,7 @@ function DateTimePicker() {
                         paddingHorizontal: "2%",
                         fontWeight: "bold"
                     }}
-                >Available Time</Text>
+                >Thời gian đặt hẹn</Text>
                 <ScrollView
                     horizontal={true}
                     style={styles.timeScrollViewContainer}

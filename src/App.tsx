@@ -3,7 +3,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import TabNavigation from "./navigation/TabNavigation.tsx";
 import {Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
 import BottomSheet from "./components/BottomSheet.tsx";
-import {Dimensions, Pressable, StyleSheet, Text} from "react-native";
+import {Dimensions, Pressable, StyleSheet, Text, View} from "react-native";
 import Appointment from "./screens/Appointment.tsx";
 import Animated, {
     clamp,
@@ -15,6 +15,9 @@ import Animated, {
     SlideOutLeft,
     SlideOutRight, useAnimatedStyle, useSharedValue, withClamp, withDelay, withSpring, withTiming
 } from "react-native-reanimated";
+import {
+    SafeAreaView
+} from "react-native-safe-area-context";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height: screenHeight } = Dimensions.get('window');
@@ -50,22 +53,38 @@ function App(): React.JSX.Element {
     }));
 
     return (
-        <GestureHandlerRootView style={{flex: 1}}>
-            <NavigationContainer >
-                <TabNavigation toggleSheet={toggleSheet}/>
-                {isOpen && (
-                    <>
-                        <AnimatedPressable
-                            style={styles.backdrop}
-                            entering={FadeIn}
-                            exiting={FadeOut}
-                            onPress={toggleSheet}
-                        />
-                        <BottomSheet content={<Appointment toggleSheet={toggleSheet}/>} style={translateY} gesture={pan}/>
-                    </>
-                )}
-            </NavigationContainer>
-        </GestureHandlerRootView>
+        // <GestureHandlerRootView style={{flex: 1}}>
+        //     <NavigationContainer >
+        //         <TabNavigation toggleSheet={toggleSheet}/>
+        //         {isOpen && (
+        //             <>
+        //                 <AnimatedPressable
+        //                     style={styles.backdrop}
+        //                     entering={FadeIn}
+        //                     exiting={FadeOut}
+        //                     onPress={toggleSheet}
+        //                 />
+        //                 <BottomSheet content={<Appointment toggleSheet={toggleSheet}/>} style={translateY} gesture={pan}/>
+        //             </>
+        //         )}
+        //     </NavigationContainer>
+        // </GestureHandlerRootView>
+        <SafeAreaView
+            style={{
+                borderWidth: 3,
+                borderColor: 'red',
+                flex: 1,
+                backgroundColor: 'blue'
+            }}
+        >
+            <View>
+                <Text>
+                    Hello
+                    
+                </Text>
+            </View>
+
+        </SafeAreaView>
 
   );
 }

@@ -8,6 +8,7 @@ import priceLogo from '../assets/TabNavigationIcons/priceLogo.svg';
 import accountLogo from '../assets/TabNavigationIcons/accountLogo.svg';
 import {colors} from "../theme/colors.ts";
 import React, {useState} from "react";
+import {normalize} from "../utilities/scale.tsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,15 +24,19 @@ function TabNavigation(props: Props) {
             headerShown: false,
             tabBarStyle: {
                 position: 'absolute',
-                height: 85,
-                borderRadius: 25,
+                height: normalize(70),
+                paddingTop: '5%',
+                paddingBottom: '8%',
+                borderTopLeftRadius: 25,
+                borderTopRightRadius: 25,
+                flexDirection: "row",
                 ...styles.shadow
             },
             tabBarIcon: ({ focused, color, size }) => {
                 let IconComponent;
                 let IconLabel;
                 let labelColor = '#B4B4B4';
-                let width = 33, height = 33;
+                let width = normalize(30), height = normalize(30);
                 switch (route.name) {
                     case 'Home':
                         IconComponent = homeLogo;
@@ -110,20 +115,18 @@ const styles = StyleSheet.create({
     },
 
     tabLabel: {
-        fontSize: 12,
+        fontSize: normalize(10.7),
         fontFamily: 'Helvetica Neue',
     },
 
     tabContainer: {
         alignItems: 'center',
-        paddingTop: 15,
         gap: 1,
     },
 
     calendarLabelContainer: {
-        borderRadius: 60,
         alignItems: 'center',
-        paddingBottom: 15
+        bottom: normalize(12)
     },
 
     calendarBackground: {
