@@ -2,6 +2,7 @@ import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native
 import CloseIcon from "../assets/closeIcon.svg";
 import {colors} from "../theme/colors.ts";
 import DateTimePicker from "../components/DateTimePicker.tsx";
+import InputField from "../components/InputField.tsx";
 
 type Props = {
     toggleSheet?: () => void
@@ -38,13 +39,13 @@ function Appointment(props: Props) {
             >
                 <DateTimePicker />
                 <View style={styles.patientContainer}>
-                {/*    service, name, age, phone, additional detail*/}
-                    <View style={styles.nameContainer}>
+                    {/*    TODO: add service input field   */}
 
-                    </View>
-                    <View style={styles.ageContainer}>
-
-                    </View>
+                    {/*    name, age, phone, additional detail*/}
+                    <InputField inputType={null} placeholder={null} />
+                    <InputField inputType={null} placeholder={null} />
+                    <InputField inputType={null} placeholder={null} />
+                    <InputField inputType={null} placeholder={null} />
                 </View>
             </ScrollView>
 

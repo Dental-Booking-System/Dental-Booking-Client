@@ -1,14 +1,21 @@
-import {View} from "react-native";
+import {StyleSheet, TextInput, View} from "react-native";
 
 type Props = {
     inputType: any,
-    placeholder: string
+    placeholder: any
 }
 
 function InputField(props: Props) {
     return (
         <View>
-            <InputField inputType={props.inputType} placeholder={props.placeholder} />
+            <TextInput />
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+
+})
+
+export default InputField;
+
