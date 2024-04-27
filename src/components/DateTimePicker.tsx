@@ -17,7 +17,7 @@ function DateTimePicker() {
     const [date, setDate] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [daysArray, setDaysArray] = useState<{ id: number, currentDay: Date; isSelected: boolean }[]>([]);
-    const [timesColumnArray, setTimeColumnArray] = useState<{ time: string, isSelected: boolean }[][]>([]);
+    const [timesColumnArray, setTimeColumnArray] = useState<{ id: string, time: string, isSelected: boolean }[][]>([]);
     const minDate = new Date();
     const weekdays = ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
     const timesArray = [
@@ -45,7 +45,7 @@ function DateTimePicker() {
     const handleTimePress = (selectedTime: string) => {
         const updatedTimesArray = timesColumnArray.map(column => {
             return (column.map(timeItem => {
-                if (selectedTime == timeItem.time) return {...timeItem, isSelected: true};
+                if (selectedTime == timeItem.id) return {...timeItem, isSelected: true};
                 return {...timeItem, isSelected: false};
             }))
         })
@@ -175,16 +175,15 @@ function DateTimePicker() {
                     style={styles.timeScrollViewContainer}
                     contentContainerStyle={styles.timeScrollViewContentContainer}
                 >
-                    {timesColumnArray.map((column, index) => {
+                    {timesColumnArray.map(column => {
                         return (
                             <View
-                                key={index}
                                 style={styles.timeColumn}>
-                                {column.map((timeItem, index) => {
+                                {column.map(timeItem => {
                                     return (
                                         <TouchableOpacity
-                                            key={index}
-                                            onPress={() => handleTimePress(timeItem.time)}
+                                            key={timeItem.id}
+                                            onPress={() => handleTimePress(timeItem.id)}
                                             style={{
                                                 backgroundColor: timeItem.isSelected ? colors.primary : 'white',
                                                 borderRadius: 15
