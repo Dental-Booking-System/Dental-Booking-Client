@@ -1,5 +1,5 @@
-import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import React, {memo} from "react";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Animated, {
     SlideInDown,
     SlideOutDown,
@@ -7,16 +7,17 @@ import Animated, {
 import StraightBarIcon from "../assets/straightBarIcon.svg"
 import {colors} from "../theme/colors.ts";
 import {GestureDetector} from "react-native-gesture-handler";
+import CloseIcon from "../assets/closeIcon.svg";
+import Appointment from "../screens/Appointment.tsx";
 
 type Props = {
-    content: React.ReactElement,
+    content?: React.ReactElement,
     style?: any,
-    gesture?: any
+    gesture?: any,
+    toggleSheet: (isOpen: boolean) => void;
 }
 
 function BottomSheet(props : Props) {
-
-
     return (
         <Animated.View
             style={[styles.bottomSheetContainer, props.style]}
@@ -31,7 +32,7 @@ function BottomSheet(props : Props) {
             {props.content}
         </Animated.View>
     )
-}
+};
 
 const styles = StyleSheet.create({
     bottomSheetContainer: {
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
         padding: '2%',
         width: "50%",
         left: "25%",
-        zIndex: 1
+        zIndex: 1,
     },
 
     straightBarIcon: {

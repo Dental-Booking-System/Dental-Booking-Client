@@ -3,5 +3,6 @@ export const colors = {
     secondary: '#B4B4B4',
     third: '#b9b9b9',
     black: '#000000',
-    grey: '#808080'
+    grey: '#808080',
+    textInputBackgroundColor: 'rgba(239,239,239,0.67)'
 };

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import TabNavigation from "./navigation/TabNavigation.tsx";
 import {Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
@@ -6,14 +6,9 @@ import BottomSheet from "./components/BottomSheet.tsx";
 import {Dimensions, Pressable, StyleSheet, Text} from "react-native";
 import Appointment from "./screens/Appointment.tsx";
 import Animated, {
-    clamp,
-    ExitAnimationsValues,
     FadeIn,
     FadeOut, runOnJS,
-    SlideInDown,
-    SlideOutDown,
-    SlideOutLeft,
-    SlideOutRight, useAnimatedStyle, useSharedValue, withClamp, withDelay, withSpring, withTiming
+    useAnimatedStyle, useSharedValue, withSpring, withTiming
 } from "react-native-reanimated";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -21,11 +16,11 @@ const { height: screenHeight } = Dimensions.get('window');
 
 function App(): React.JSX.Element {
     const offset = useSharedValue(0);
-    const [isOpen, setOpen] = useState(false);
+    const [isSheetOpen, setSheetOpen] = useState(false);
 
     const toggleSheet = () => {
-        setOpen(!isOpen);
         offset.value = 0;
+        setSheetOpen(!isSheetOpen);
     };
 
     const pan = Gesture.Pan()
@@ -53,7 +48,7 @@ function App(): React.JSX.Element {
         <GestureHandlerRootView style={{flex: 1}}>
             <NavigationContainer >
                 <TabNavigation toggleSheet={toggleSheet}/>
-                {isOpen && (
+                {isSheetOpen ? (
                     <>
                         <AnimatedPressable
                             style={styles.backdrop}
@@ -61,9 +56,19 @@ function App(): React.JSX.Element {
                             exiting={FadeOut}
                             onPress={toggleSheet}
                         />
-                        <BottomSheet content={<Appointment toggleSheet={toggleSheet}/>} style={translateY} gesture={pan}/>
+                        <BottomSheet content={
+                                        <Appointment
+                                            toggleSheet={toggleSheet}
+                                        />
+                                     }
+                                     style={translateY}
+                                     gesture={pan}
+                                     toggleSheet={toggleSheet}
+                        />
                     </>
-                )}
+
+                ): null}
+
             </NavigationContainer>
         </GestureHandlerRootView>
 

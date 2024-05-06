@@ -6,15 +6,18 @@ import {
     View
 } from "react-native";
 import DatePicker from "react-native-date-picker";
-import {SetStateAction, useEffect, useRef, useState} from "react";
+import {memo, SetStateAction, useEffect, useRef, useState} from "react";
 import ArrowDownIcon from "../assets/arrowDownIcon.svg"
 import {colors} from "../theme/colors.ts";
 import DateCard from "./cards/DateCard.tsx";
 import TimeCard from "./cards/TimeCard.tsx";
 
+type Props = {
+    handleSetDate: (date: Date) => void,
+    date: Date
+}
 
-function DateTimePicker() {
-    const [date, setDate] = useState(new Date());
+const DateTimePicker = memo(function DateTimePicker(props: Props) {
     const [open, setOpen] = useState(false);
     const [daysArray, setDaysArray] = useState<{ id: number, currentDay: Date; isSelected: boolean }[]>([]);
     const [timesColumnArray, setTimeColumnArray] = useState<{ time: string, isSelected: boolean }[][]>([]);
@@ -30,7 +33,7 @@ function DateTimePicker() {
     const flatListRef = useRef<FlatList>(null);
 
     const handlePress = (selectedID: number) => {
-        let chosenDate = date
+        let chosenDate = props.date
         const updatedDaysArray = daysArray.map((val) => {
             if (val.id === selectedID) {
                 chosenDate = val.currentDay
@@ -39,7 +42,7 @@ function DateTimePicker() {
             return {...val, isSelected: false};
         });
         setDaysArray(updatedDaysArray);
-        setDate(chosenDate);
+        props.handleSetDate(chosenDate);
     };
 
     const handleTimePress = (selectedTime: string) => {
@@ -53,7 +56,7 @@ function DateTimePicker() {
     }
 
     useEffect(() => {
-        const chosenDate = date;
+        const chosenDate = props.date;
         let chosenIndex = 0;
         const days = [];
         const lastDayOfMonth = new Date(chosenDate.getFullYear(), chosenDate.getMonth() + 1, 0).getDate();
@@ -66,11 +69,11 @@ function DateTimePicker() {
         for (let i = initialDateNum; i <= lastDayOfMonth; i++) {
             const currentDay = new Date(chosenDate.getFullYear(), chosenDate.getMonth(), i);
             // Push the current date to the array
-            days.push({id: i, currentDay, isSelected: i == date.getDate()});
-            if (i == date.getDate()) chosenIndex = i - initialDateNum;
+            days.push({id: i, currentDay, isSelected: i == props.date.getDate()});
+            if (i == props.date.getDate()) chosenIndex = i - initialDateNum;
         }
         setDaysArray(days);
-    }, [date]);
+    }, [props.date]);
 
     useEffect(() => {
         for (let i = 0; i < daysArray.length; i++) {
@@ -79,7 +82,7 @@ function DateTimePicker() {
                 return;
             }
         }
-    }, [date, daysArray]);
+    }, [props.date, daysArray]);
 
     useEffect(() => {
         let updatedTimesArray: { id: string, time: string; isSelected: boolean; }[][] = []
@@ -105,19 +108,19 @@ function DateTimePicker() {
                         onPress={() => setOpen(true)}
                         style={styles.dateTitleContainer}
                     >
-                        <Text style={styles.dateText}>{` ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`}</Text>
+                        <Text style={styles.dateText}>{` ${props.date.getDate()}/${props.date.getMonth() + 1}/${props.date.getFullYear()}`}</Text>
                         <ArrowDownIcon fill={colors.black}/>
                     </TouchableOpacity>
                 </View>
                 <DatePicker
                     modal
                     open={open}
-                    date={date}
+                    date={props.date}
                     mode={"date"}
                     minimumDate={minDate}
                     onConfirm={(date) => {
                         setOpen(false);
-                        setDate(date);
+                        props.handleSetDate(date);
                     }}
                     onCancel={() => {
                         setOpen(false);
@@ -207,7 +210,7 @@ function DateTimePicker() {
 
         </View>
     )
-}
+});
 
 const styles = StyleSheet.create({
     datePickerContainer: {

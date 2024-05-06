@@ -16,7 +16,6 @@ function DateCard(props: Props) {
                     alignSelf: "center",
                     fontSize: 23,
                     marginTop: "3%",
-                    fontStyle: "italic",
                     fontFamily: "Helvetica Neue",
                     fontWeight: "600",
                     color: colors.grey,
@@ -28,7 +27,6 @@ function DateCard(props: Props) {
             <Text
                 style={{
                     alignSelf: "center",
-                    fontStyle: "italic",
                     fontFamily: "Helvetica",
                     fontWeight: "500",
                     fontSize: 11,

@@ -7,15 +7,15 @@ import calendarLogo from '../assets/TabNavigationIcons/calendarLogo.svg';
 import priceLogo from '../assets/TabNavigationIcons/priceLogo.svg';
 import accountLogo from '../assets/TabNavigationIcons/accountLogo.svg';
 import {colors} from "../theme/colors.ts";
-import React, {useState} from "react";
+import React, {memo, useState} from "react";
 
 const Tab = createBottomTabNavigator();
 
 type Props = {
-    toggleSheet: () => void
+    toggleSheet: () => void;
 }
 
-function TabNavigation(props: Props) {
+const TabNavigation = memo(function TabNavigation(props: Props) {
 
     return (
       <Tab.Navigator
@@ -31,7 +31,7 @@ function TabNavigation(props: Props) {
                 let IconComponent;
                 let IconLabel;
                 let labelColor = '#B4B4B4';
-                let width = 33, height = 33;
+                let width = 36, height = 36;
                 switch (route.name) {
                     case 'Home':
                         IconComponent = homeLogo;
@@ -95,7 +95,7 @@ function TabNavigation(props: Props) {
           <Tab.Screen name="Account" component={Home}/>
       </Tab.Navigator>
     );
-}
+});
 
 const styles = StyleSheet.create({
     shadow: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     },
 
     tabLabel: {
-        fontSize: 12,
+        fontSize: 13.5,
         fontFamily: 'Helvetica Neue',
     },
 
