@@ -11,6 +11,8 @@ import ArrowDownIcon from "../assets/arrowDownIcon.svg"
 import {colors} from "../theme/colors.ts";
 import DateCard from "./cards/DateCard.tsx";
 import TimeCard from "./cards/TimeCard.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
 
 type Props = {
     handleSetDate: (date: Date) => void,
@@ -18,6 +20,8 @@ type Props = {
 }
 
 const DateTimePicker = memo(function DateTimePicker(props: Props) {
+    const date = useSelector((state: RootState) => state.appointment.date);
+    const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [daysArray, setDaysArray] = useState<{ id: number, currentDay: Date; isSelected: boolean }[]>([]);
     const [timesColumnArray, setTimeColumnArray] = useState<{ time: string, isSelected: boolean }[][]>([]);

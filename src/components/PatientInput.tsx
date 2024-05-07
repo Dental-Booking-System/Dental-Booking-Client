@@ -47,11 +47,6 @@ const PatientInput = memo(function PatientInput(props: Props) {
         props.handleSetGenderArray(updatedGenderArray);
     }, []);
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return (
         <View style={styles.patientInputContainer}>
             <Text
@@ -233,7 +228,6 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         fontStyle: "italic"
     }
-
 
 })
 

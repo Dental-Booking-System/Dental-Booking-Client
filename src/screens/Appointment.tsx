@@ -97,7 +97,7 @@ function Appointment(props: Props) {
      */
     const handleSubmit = () => {
         console.log(phone);
-        signInWithPhoneNumber(phone);
+        // signInWithPhoneNumber(phone);
     };
 
     return (
