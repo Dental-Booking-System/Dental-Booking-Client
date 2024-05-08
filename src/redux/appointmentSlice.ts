@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface AppointmentState {
-    date: Date,
+    date: string,
     service: string,
     name: string,
     phone: string,
@@ -10,7 +10,7 @@ interface AppointmentState {
 }
 
 const initialState: AppointmentState = {
-    date: new Date(),
+    date: "",
     service: "",
     name: "",
     phone: "",
@@ -22,10 +22,11 @@ const appointmentSlice = createSlice({
     name: "appointment",
     initialState,
     reducers: {
-        onChangeDate: (state, action: PayloadAction<Date>) => {
+        onChangeDate: (state, action: PayloadAction<string>) => {
             state.date = action.payload;
         }
     }
 })
 
+export const {onChangeDate} = appointmentSlice.actions;
 export default appointmentSlice.reducer;

@@ -13,14 +13,13 @@ import DateCard from "./cards/DateCard.tsx";
 import TimeCard from "./cards/TimeCard.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
+import {onChangeDate} from "../redux/appointmentSlice.ts";
 
-type Props = {
-    handleSetDate: (date: Date) => void,
-    date: Date
-}
 
-const DateTimePicker = memo(function DateTimePicker(props: Props) {
+
+const DateTimePicker = memo(function DateTimePicker() {
     const date = useSelector((state: RootState) => state.appointment.date);
+    const [dateState, setDateState] = useState(date == "" ? new Date() : new Date(date));
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [daysArray, setDaysArray] = useState<{ id: number, currentDay: Date; isSelected: boolean }[]>([]);
@@ -37,7 +36,7 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
     const flatListRef = useRef<FlatList>(null);
 
     const handlePress = (selectedID: number) => {
-        let chosenDate = props.date
+        let chosenDate = dateState;
         const updatedDaysArray = daysArray.map((val) => {
             if (val.id === selectedID) {
                 chosenDate = val.currentDay
@@ -46,7 +45,8 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
             return {...val, isSelected: false};
         });
         setDaysArray(updatedDaysArray);
-        props.handleSetDate(chosenDate);
+        setDateState(chosenDate);
+        dispatch(onChangeDate(chosenDate.toISOString()));
     };
 
     const handleTimePress = (selectedTime: string) => {
@@ -60,7 +60,7 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
     }
 
     useEffect(() => {
-        const chosenDate = props.date;
+        const chosenDate = dateState;
         let chosenIndex = 0;
         const days = [];
         const lastDayOfMonth = new Date(chosenDate.getFullYear(), chosenDate.getMonth() + 1, 0).getDate();
@@ -73,11 +73,11 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
         for (let i = initialDateNum; i <= lastDayOfMonth; i++) {
             const currentDay = new Date(chosenDate.getFullYear(), chosenDate.getMonth(), i);
             // Push the current date to the array
-            days.push({id: i, currentDay, isSelected: i == props.date.getDate()});
-            if (i == props.date.getDate()) chosenIndex = i - initialDateNum;
+            days.push({id: i, currentDay, isSelected: i == chosenDate.getDate()});
+            if (i == chosenDate.getDate()) chosenIndex = i - initialDateNum;
         }
         setDaysArray(days);
-    }, [props.date]);
+    }, [dateState]);
 
     useEffect(() => {
         for (let i = 0; i < daysArray.length; i++) {
@@ -86,7 +86,7 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
                 return;
             }
         }
-    }, [props.date, daysArray]);
+    }, [dateState, daysArray]);
 
     useEffect(() => {
         let updatedTimesArray: { id: string, time: string; isSelected: boolean; }[][] = []
@@ -112,19 +112,20 @@ const DateTimePicker = memo(function DateTimePicker(props: Props) {
                         onPress={() => setOpen(true)}
                         style={styles.dateTitleContainer}
                     >
-                        <Text style={styles.dateText}>{` ${props.date.getDate()}/${props.date.getMonth() + 1}/${props.date.getFullYear()}`}</Text>
+                        <Text style={styles.dateText}>{` ${dateState.getDate()}/${dateState.getMonth() + 1}/${dateState.getFullYear()}`}</Text>
                         <ArrowDownIcon fill={colors.black}/>
                     </TouchableOpacity>
                 </View>
                 <DatePicker
                     modal
                     open={open}
-                    date={props.date}
+                    date={dateState}
                     mode={"date"}
                     minimumDate={minDate}
                     onConfirm={(date) => {
+                        setDateState(date);
                         setOpen(false);
-                        props.handleSetDate(date);
+                        dispatch(onChangeDate(date.toISOString()));
                     }}
                     onCancel={() => {
                         setOpen(false);

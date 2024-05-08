@@ -13,7 +13,6 @@ type Props = {
 }
 
 function Appointment(props: Props) {
-    const [date, setDate] = useState(new Date());
     const [serviceSelected, setServiceSelected] = useState("");
     const [open, setOpen] = useState(false);
     const [birthDate, setBirthDate] = useState(new Date());
@@ -21,10 +20,6 @@ function Appointment(props: Props) {
     const [phone, setPhone] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState("");
     const [genderArray, setGenderArray] = useState<{gender: string, isSelected: boolean}[]>([]);
-
-    const handleSetDate: (date: Date) => void = useCallback((date) => {
-        setDate(date);
-    }, []);
 
     const handleSetServiceSelected: (service: string) => void = useCallback((service) => {
         setServiceSelected(service);
@@ -128,7 +123,7 @@ function Appointment(props: Props) {
                 style={styles.scrollViewContainer}
                 contentContainerStyle={styles.scrollViewContentContainer}
             >
-                <DateTimePicker date={date} handleSetDate={handleSetDate}/>
+                <DateTimePicker />
                 <ServiceInput handleSetServiceSelected={handleSetServiceSelected}/>
                 <PatientInput
                     open={open}

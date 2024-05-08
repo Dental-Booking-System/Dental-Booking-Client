@@ -10,6 +10,8 @@ import Animated, {
     FadeOut, runOnJS,
     useAnimatedStyle, useSharedValue, withSpring, withTiming
 } from "react-native-reanimated";
+import {Provider} from "react-redux";
+import {store} from './redux/store.ts';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height: screenHeight } = Dimensions.get('window');
@@ -45,32 +47,34 @@ function App(): React.JSX.Element {
     }));
 
     return (
-        <GestureHandlerRootView style={{flex: 1}}>
-            <NavigationContainer >
-                <TabNavigation toggleSheet={toggleSheet}/>
-                {isSheetOpen ? (
-                    <>
-                        <AnimatedPressable
-                            style={styles.backdrop}
-                            entering={FadeIn}
-                            exiting={FadeOut}
-                            onPress={toggleSheet}
-                        />
-                        <BottomSheet content={
-                                        <Appointment
-                                            toggleSheet={toggleSheet}
-                                        />
-                                     }
-                                     style={translateY}
-                                     gesture={pan}
-                                     toggleSheet={toggleSheet}
-                        />
-                    </>
+        <Provider store={store}>
+            <GestureHandlerRootView style={{flex: 1}}>
+                <NavigationContainer >
+                    <TabNavigation toggleSheet={toggleSheet}/>
+                    {isSheetOpen ? (
+                        <>
+                            <AnimatedPressable
+                                style={styles.backdrop}
+                                entering={FadeIn}
+                                exiting={FadeOut}
+                                onPress={toggleSheet}
+                            />
+                            <BottomSheet content={
+                                            <Appointment
+                                                toggleSheet={toggleSheet}
+                                            />
+                                         }
+                                         style={translateY}
+                                         gesture={pan}
+                                         toggleSheet={toggleSheet}
+                            />
+                        </>
 
-                ): null}
+                    ): null}
 
-            </NavigationContainer>
-        </GestureHandlerRootView>
+                </NavigationContainer>
+            </GestureHandlerRootView>
+        </Provider>
 
   );
 }
