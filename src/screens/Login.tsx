@@ -5,24 +5,27 @@ import GoogleIcon from "../assets/googleIcon.svg";
 import PersonIcon from "../assets/personIcon.svg";
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import {logIn} from "../redux/authSlice.ts";
 
 
 GoogleSignin.configure({
-    webClientId: '823035123696-s170u9e0faveh4scmtp39vtei2q3cm4o.apps.googleusercontent.com',
+    webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
 });
 
-type Props = {
-    isLoggedIn: boolean;
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-}
 
-function Login(props: Props) {
+function Login() {
+
+    const dispatch = useDispatch();
 
     async function signInWithGoogle() {
         try {
             const { idToken } = await GoogleSignin.signIn();
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             await auth().signInWithCredential(googleCredential);
+            console.log("id token: " + idToken);
+            console.log(googleCredential);
 
         } catch (err) {
             throw err;
@@ -32,7 +35,7 @@ function Login(props: Props) {
     async function signIn() {
         try {
             await signInWithGoogle();
-            props.setIsLoggedIn(true);
+            dispatch(logIn());
         } catch (err) {
             console.log(err);
         }
@@ -53,7 +56,7 @@ function Login(props: Props) {
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.buttonStyle}
-                onPress={() => props.setIsLoggedIn(true)}
+                onPress={() => dispatch(logIn())}
             >
                 <PersonIcon style={{
                 }} height={45} width={30}/>
@@ -63,7 +66,7 @@ function Login(props: Props) {
                 style={{
 
                 }}
-                onPress={() => props.setIsLoggedIn(true)}
+                onPress={() => dispatch(logIn())}
             >
                 <Text style={[styles.textStyle, {
                     fontWeight: '400',

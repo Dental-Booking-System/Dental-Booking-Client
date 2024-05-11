@@ -8,6 +8,7 @@ import priceLogo from '../assets/TabNavigationIcons/priceLogo.svg';
 import accountLogo from '../assets/TabNavigationIcons/accountLogo.svg';
 import {colors} from "../theme/colors.ts";
 import React, {memo, useState} from "react";
+import Account from "../screens/Account.tsx";
 
 const Tab = createBottomTabNavigator();
 
@@ -92,7 +93,7 @@ const TabNavigation = memo(function TabNavigation(props: Props) {
               name="Calendar"
               component={Home}/>
           <Tab.Screen name="Price" component={Home}/>
-          <Tab.Screen name="Account" component={Home}/>
+          <Tab.Screen name="Account" component={Account}/>
       </Tab.Navigator>
     );
 });
