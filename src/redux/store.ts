@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import appointmentReducer from "./appointmentSlice.ts";
+import patientReducer from "./patientSlice.ts";
+
 
 export const store = configureStore({
     reducer: {
-        appointment: appointmentReducer
+        appointment: appointmentReducer,
+        patient: patientReducer
     },
 });
 

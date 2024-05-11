@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import CloseIcon from "../assets/closeIcon.svg";
 import DateTimePicker from "../components/DateTimePicker.tsx";
 import PatientInput from "../components/PatientInput.tsx";
@@ -6,6 +6,9 @@ import ServiceInput from "../components/ServiceInput.tsx";
 import React, {memo, SetStateAction, useCallback, useEffect, useState} from "react";
 import {colors} from "../theme/colors.ts";
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import {useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import LoadingModal from "../components/modals/LoadingModal.tsx";
 
 
 type Props = {
@@ -13,42 +16,20 @@ type Props = {
 }
 
 function Appointment(props: Props) {
-    const [serviceSelected, setServiceSelected] = useState("");
-    const [open, setOpen] = useState(false);
-    const [birthDate, setBirthDate] = useState(new Date());
-    const [name, setName] = useState("");
-    const [phone, setPhone] = useState('');
-    const [additionalInfo, setAdditionalInfo] = useState("");
-    const [genderArray, setGenderArray] = useState<{gender: string, isSelected: boolean}[]>([]);
 
-    const handleSetServiceSelected: (service: string) => void = useCallback((service) => {
-        setServiceSelected(service);
-    },[]);
+    const [showLoading, setShowLoading] = useState(false);
 
-    const handleSetOpen: (open: boolean) => void = useCallback((open) => {
-        setOpen(open);
-    }, []);
-
-    const handleSetBirthDate: (date: Date) => void = useCallback((date) => {
-        setBirthDate(date);
-    }, []);
-
-    const handleSetName: (name: string) => void = useCallback((name) => {
-        console.log(name);
-        setName(name);
-    },[]);
-
-    const handleSetPhone: (phone: string) => void = useCallback((phone: string) => {
-        setPhone(phone);
-    },[]);
-
-    const handleSetAdditionalInfo: (info: string) => void = useCallback((info) => {
-        setAdditionalInfo(info);
-    },[]);
-
-    const handleSetGenderArray: (updatedArray: any) => void = useCallback((updatedArray) => {
-        setGenderArray(updatedArray);
-    },[]);
+    /**
+     * Appointment Info
+     */
+    const date = useSelector((state: RootState) => state.appointment.date);
+    const time = useSelector((state: RootState) => state.appointment.time);
+    const name = useSelector((state: RootState) => state.patient.name);
+    const phone = useSelector((state: RootState) => state.patient.phone);
+    const birthDate = useSelector((state: RootState) => state.patient.birthDate);
+    const gender = useSelector((state: RootState) => state.patient.gender);
+    const additionalInfo = useSelector((state: RootState) => state.appointment.additionalInfo);
+    const service = useSelector((state: RootState) => state.appointment.service);
 
     /**
      * Phone OTP
@@ -75,8 +56,12 @@ function Appointment(props: Props) {
 
     // Handle the button press
     async function signInWithPhoneNumber(phoneNumber: any) {
-        const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-        setConfirm(confirmation);
+        try {
+            const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+            setConfirm(confirmation);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     async function confirmCode() {
@@ -90,10 +75,47 @@ function Appointment(props: Props) {
     /**
      * Submit appointment and phone OTP
      */
-    const handleSubmit = () => {
-        console.log(phone);
+    async function handleSubmit() {
+        // Check if phone is registered
+        // signInWithPhoneNumber(phone).then(() => {
+        //     setShowLoading(false);
+        // });
         // signInWithPhoneNumber(phone);
-    };
+        // console.log({
+        //     date: date,
+        //     time: time,
+        //     service: service,
+        //     name: name,
+        //     phone: phone,
+        //     birthDate: birthDate,
+        //     gender: gender,
+        //     additionalInfo: additionalInfo
+        // })
+        const isRegistered = await checkRegisteredPhoneNumber(phone);
+        if (!isRegistered) {
+            await signInWithPhoneNumber(phone);
+            console.log(auth().currentUser?.uid);
+            return
+        }
+        console.log(auth().currentUser?.uid);
+    }
+
+    async function checkRegisteredPhoneNumber(phoneNumber: string) {
+        return fetch(`http://localhost:8080/api/check-phone-number?phoneNumber=${phone.substring(1)}`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => {
+               return json;
+            })
+            .catch((err) => {
+                throw err;
+            });
+    }
+
 
     return (
         <View style={styles.appointmentContainer}>
@@ -124,21 +146,8 @@ function Appointment(props: Props) {
                 contentContainerStyle={styles.scrollViewContentContainer}
             >
                 <DateTimePicker />
-                <ServiceInput handleSetServiceSelected={handleSetServiceSelected}/>
-                <PatientInput
-                    open={open}
-                    handleSetOpen={handleSetOpen}
-                    birthDate={birthDate}
-                    handleSetBirthDate={handleSetBirthDate}
-                    name={name}
-                    handleSetName={handleSetName}
-                    phone={phone}
-                    handleSetPhone={handleSetPhone}
-                    genderArray={genderArray}
-                    handleSetGenderArray={handleSetGenderArray}
-                    info={additionalInfo}
-                    handleSetAdditionalInfo={handleSetAdditionalInfo}
-                />
+                <ServiceInput />
+                <PatientInput />
 
                 <TouchableOpacity
                     onPress={() => handleSubmit()}
@@ -164,6 +173,13 @@ function Appointment(props: Props) {
                         </Text>
                     </View>
                 </TouchableOpacity>
+                {confirm && (
+                    <>
+                        <TextInput value={code} onChangeText={text => setCode(text)} />
+                        <Button title="Confirm Code" onPress={() => confirmCode()} />
+                    </>
+                )}
+                <LoadingModal isVisible={showLoading}/>
             </ScrollView>
 
         </View>

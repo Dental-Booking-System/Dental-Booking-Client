@@ -3,27 +3,25 @@ import {memo, useEffect, useState} from "react";
 import {colors} from "../theme/colors.ts";
 import DatePicker from "react-native-date-picker";
 import PhoneInput from "react-native-phone-input";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import {onChangeBirthDate, onChangeGender, onChangeName, onChangePhone} from "../redux/patientSlice.ts";
+import {onChangeAdditionalInfo} from "../redux/appointmentSlice.ts";
 
-type Props = {
-    open: boolean;
-    handleSetOpen: (open: boolean) => void;
-    birthDate: Date
-    handleSetBirthDate: (date: Date) => void;
-    name: string;
-    handleSetName: (name: string) => void;
-    phone: string;
-    handleSetPhone: (phone: string) => void;
-    genderArray: { gender: string, isSelected: boolean }[]
-    handleSetGenderArray: (updatedArray: any) => void;
-    info: string;
-    handleSetAdditionalInfo: (info: string) => void;
-}
-
-const PatientInput = memo(function PatientInput(props: Props) {
+const PatientInput = memo(function PatientInput() {
+    const dispatch = useDispatch();
+    const [open, setOpen] = useState(false);
+    const name = useSelector((state: RootState) => state.patient.name);
+    const phone = useSelector((state: RootState) => state.patient.phone);
+    const birthDate = useSelector((state: RootState) => state.patient.birthDate);
+    const gender = useSelector((state: RootState) => state.patient.gender);
+    const additionalInfo = useSelector((state: RootState) => state.appointment.additionalInfo);
+    const [birthDateState, setBirthDateState] = useState(birthDate == "" ? new Date() : new Date(birthDate));
     const genders = ["Nam", "Nữ", "Khác"]
+    const [genderArray, setGenderArray] = useState<{gender: string, isSelected: boolean}[]>([]);
 
     const handleGenderPress = (gender: string) => {
-        const updatedGenderArray = props.genderArray.map((item: any) => {
+        const updatedGenderArray = genderArray.map((item: any) => {
             if (gender === item.gender) return {
                 gender: item.gender,
                 isSelected: true
@@ -33,18 +31,19 @@ const PatientInput = memo(function PatientInput(props: Props) {
                 isSelected: false
             }
         });
-        props.handleSetGenderArray(updatedGenderArray);
+        dispatch(onChangeGender(gender));
+        setGenderArray(updatedGenderArray);
     }
 
     useEffect(() => {
         let updatedGenderArray: { gender: string, isSelected: boolean }[] = [];
-        genders.forEach(gender => {
+        genders.forEach(genderString => {
             updatedGenderArray.push({
-                gender: gender,
-                isSelected: false
+                gender: genderString,
+                isSelected: genderString == gender
             });
         });
-        props.handleSetGenderArray(updatedGenderArray);
+        setGenderArray(updatedGenderArray);
     }, []);
 
     return (
@@ -62,9 +61,9 @@ const PatientInput = memo(function PatientInput(props: Props) {
                     editable
                     maxLength={35}
                     onChangeText={(text) => {
-                        props.handleSetName(text);
+                        dispatch(onChangeName(text));
                     }}
-                    value={props.name}
+                    value={name}
                     style={styles.textInput}
                 />
             </View>
@@ -73,10 +72,9 @@ const PatientInput = memo(function PatientInput(props: Props) {
                     style={styles.labelInput}
                 >Số điện thoại</Text>
                 <PhoneInput
-                    // @ts-ignore
-                    value={props.phone}
+                    initialValue= {phone == "" ? "84": phone}
                     initialCountry={'vn'}
-                    onChangePhoneNumber={(phone: string) => props.handleSetPhone(phone)}
+                    onChangePhoneNumber={(phone: string) => dispatch(onChangePhone(phone))}
                     style={[styles.textInput, {
 
                     }]}
@@ -91,7 +89,7 @@ const PatientInput = memo(function PatientInput(props: Props) {
                 </Text>
                 <View >
                     <TouchableOpacity
-                        onPress={() => props.handleSetOpen(true)}
+                        onPress={() => setOpen(true)}
                         style={styles.textInput}
                     >
                         <Text style={{
@@ -99,21 +97,22 @@ const PatientInput = memo(function PatientInput(props: Props) {
                             fontFamily: "Helvetica Neue",
                             color: '#2c2c2c',
                         }}>
-                            {` ${props.birthDate.getDate()}/${props.birthDate.getMonth() + 1}/${props.birthDate.getFullYear()}`}
+                            {` ${birthDateState.getDate()}/${birthDateState.getMonth() + 1}/${birthDateState.getFullYear()}`}
                         </Text>
                     </TouchableOpacity>
                 </View>
                 <DatePicker
                     modal
-                    open={props.open}
-                    date={props.birthDate}
+                    open={open}
+                    date={birthDateState}
                     mode={"date"}
                     onConfirm={(date) => {
-                        props.handleSetOpen(false);
-                        props.handleSetBirthDate(date);
+                        setOpen(false);
+                        dispatch(onChangeBirthDate(date.toISOString()));
+                        setBirthDateState(date);
                     }}
                     onCancel={() => {
-                        props.handleSetOpen(false);
+                        setOpen(false);
                     }}
                 />
             </View>
@@ -127,7 +126,7 @@ const PatientInput = memo(function PatientInput(props: Props) {
                     flexDirection: "row",
                     gap: 8
                 }}>
-                    {props.genderArray.map((item, index) => {
+                    {genderArray.map((item, index) => {
                         return (
                             <TouchableOpacity
                                 key={index}
@@ -160,9 +159,9 @@ const PatientInput = memo(function PatientInput(props: Props) {
                     editable
                     maxLength={35}
                     onChangeText={ (text) => {
-                        props.handleSetAdditionalInfo(text);
+                        dispatch(onChangeAdditionalInfo(text))
                     }}
-                    value={props.info}
+                    value={additionalInfo}
                     style={[styles.textInput,{
                         height: 100,
 

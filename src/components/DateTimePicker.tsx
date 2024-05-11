@@ -13,17 +13,18 @@ import DateCard from "./cards/DateCard.tsx";
 import TimeCard from "./cards/TimeCard.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
-import {onChangeDate} from "../redux/appointmentSlice.ts";
+import {onChangeDate, onChangeTime} from "../redux/appointmentSlice.ts";
 
 
 
 const DateTimePicker = memo(function DateTimePicker() {
     const date = useSelector((state: RootState) => state.appointment.date);
+    const time = useSelector((state: RootState) => state.appointment.time);
     const [dateState, setDateState] = useState(date == "" ? new Date() : new Date(date));
+    const [timesColumnArray, setTimeColumnArray] = useState<{ time: string, isSelected: boolean }[][]>([]);
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [daysArray, setDaysArray] = useState<{ id: number, currentDay: Date; isSelected: boolean }[]>([]);
-    const [timesColumnArray, setTimeColumnArray] = useState<{ time: string, isSelected: boolean }[][]>([]);
     const minDate = new Date();
     const weekdays = ['chủ nhật', 'thứ hai', 'thứ ba', 'thứ tư', 'thứ năm', 'thứ sáu', 'thứ bảy'];
     const timesArray = [
@@ -34,7 +35,6 @@ const DateTimePicker = memo(function DateTimePicker() {
         ["11:00 AM", "02:00 PM", "05:00 PM"],
     ]
     const flatListRef = useRef<FlatList>(null);
-
     const handlePress = (selectedID: number) => {
         let chosenDate = dateState;
         const updatedDaysArray = daysArray.map((val) => {
@@ -52,10 +52,13 @@ const DateTimePicker = memo(function DateTimePicker() {
     const handleTimePress = (selectedTime: string) => {
         const updatedTimesArray = timesColumnArray.map(column => {
             return (column.map(timeItem => {
-                if (selectedTime == timeItem.time) return {...timeItem, isSelected: true};
+                if (selectedTime == timeItem.time) {
+                    return {...timeItem, isSelected: true};
+                }
                 return {...timeItem, isSelected: false};
             }))
         })
+        dispatch(onChangeTime(selectedTime));
         setTimeColumnArray(updatedTimesArray);
     }
 
@@ -92,11 +95,11 @@ const DateTimePicker = memo(function DateTimePicker() {
         let updatedTimesArray: { id: string, time: string; isSelected: boolean; }[][] = []
         timesArray.forEach( column => {
             let updatedColumn: { id: string, time: string; isSelected: boolean; }[] = [];
-            column.forEach(time => {
+            column.forEach(timeString => {
                 updatedColumn.push({
-                    id: time,
-                    time: time,
-                    isSelected: false
+                    id: timeString,
+                    time: timeString,
+                    isSelected: timeString == time
                 })
             })
             updatedTimesArray.push(updatedColumn);

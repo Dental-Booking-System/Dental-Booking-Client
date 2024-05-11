@@ -12,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import {Provider} from "react-redux";
 import {store} from './redux/store.ts';
+import Login from "./screens/Login.tsx";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const { height: screenHeight } = Dimensions.get('window');
@@ -19,6 +20,7 @@ const { height: screenHeight } = Dimensions.get('window');
 function App(): React.JSX.Element {
     const offset = useSharedValue(0);
     const [isSheetOpen, setSheetOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const toggleSheet = () => {
         offset.value = 0;
@@ -50,27 +52,34 @@ function App(): React.JSX.Element {
         <Provider store={store}>
             <GestureHandlerRootView style={{flex: 1}}>
                 <NavigationContainer >
-                    <TabNavigation toggleSheet={toggleSheet}/>
-                    {isSheetOpen ? (
+                    {isLoggedIn ?
                         <>
-                            <AnimatedPressable
-                                style={styles.backdrop}
-                                entering={FadeIn}
-                                exiting={FadeOut}
-                                onPress={toggleSheet}
-                            />
-                            <BottomSheet content={
-                                            <Appointment
-                                                toggleSheet={toggleSheet}
-                                            />
-                                         }
-                                         style={translateY}
-                                         gesture={pan}
-                                         toggleSheet={toggleSheet}
-                            />
-                        </>
+                            <TabNavigation toggleSheet={toggleSheet}/>
+                            {isSheetOpen ? (
+                                <>
+                                    <AnimatedPressable
+                                        style={styles.backdrop}
+                                        entering={FadeIn}
+                                        exiting={FadeOut}
+                                        onPress={toggleSheet}
+                                    />
+                                    <BottomSheet content={
+                                        <Appointment
+                                            toggleSheet={toggleSheet}
+                                        />
+                                    }
+                                                 style={translateY}
+                                                 gesture={pan}
+                                                 toggleSheet={toggleSheet}
+                                    />
+                                </>
 
-                    ): null}
+                            ): null}
+                        </>
+                        :
+                        <Login isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+                    }
+
 
                 </NavigationContainer>
             </GestureHandlerRootView>

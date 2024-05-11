@@ -1,21 +1,24 @@
 import {StyleSheet, Text, View} from "react-native";
 import React, {memo, useEffect, useState} from "react";
 import {SelectList} from "react-native-dropdown-select-list/index";
-import {colors} from "../theme/colors.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import {onChangeService} from "../redux/appointmentSlice.ts";
 
-type Props = {
-    handleSetServiceSelected: (service: string) => void;
-}
 
-const ServiceInput = memo(function ServiceInput(props: Props) {
+
+const ServiceInput = memo(function ServiceInput() {
+    const service = useSelector((state: RootState) => state.appointment.service);
+    const dispatch = useDispatch();
+
     const services = [
         {key: '1', value: 'Trám răng'},
         {key: '2', value: 'Tẩy trắng răng'},
         {key: '3', value: 'Cắm implants'},
         {key: '4', value: 'Nhổ răng'},
         {key: '5', value: 'Cạo vôi răng'},
-
     ]
+
     return (
         <View style={styles.serviceInputContainer}>
             <Text style={{
@@ -27,10 +30,14 @@ const ServiceInput = memo(function ServiceInput(props: Props) {
                 Dịch vụ
             </Text>
             <SelectList
-                setSelected={(val: string) => props.handleSetServiceSelected(val)}
+                setSelected={(val: string) => {
+                    if (val == '0') dispatch(onChangeService(service))
+                    else dispatch(onChangeService(val))
+                }}
                 data={services}
                 save="value"
                 fontFamily={"Helvetica Neue"}
+                defaultOption={{key: '0', value: service}}
                 placeholder={"Hãy chọn dịch vụ"}
                 inputStyles={{
                     fontWeight: "400",
