@@ -2,7 +2,8 @@ import {Modal, StyleSheet, View, ActivityIndicator, Text} from "react-native";
 import React from "react";
 
 type Props = {
-    isVisible: boolean
+    isVisible: boolean,
+    text: string
 }
 
 function LoadingModal(props: Props) {
@@ -25,7 +26,7 @@ function LoadingModal(props: Props) {
                         color: 'white'
                     }}
                 >
-                    Đang xử lí thông tin ...
+                    {props.text}
                 </Text>
             </View>
 

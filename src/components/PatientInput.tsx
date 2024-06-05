@@ -1,4 +1,4 @@
-import {Button, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {memo, useEffect, useState} from "react";
 import {colors} from "../theme/colors.ts";
 import DatePicker from "react-native-date-picker";
@@ -6,7 +6,7 @@ import PhoneInput from "react-native-phone-input";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import {onChangeBirthDate, onChangeGender, onChangeName, onChangePhone} from "../redux/patientSlice.ts";
-import {onChangeAdditionalInfo} from "../redux/appointmentSlice.ts";
+import auth from "@react-native-firebase/auth";
 
 const PatientInput = memo(function PatientInput() {
     const dispatch = useDispatch();
@@ -44,6 +44,16 @@ const PatientInput = memo(function PatientInput() {
             });
         });
         setGenderArray(updatedGenderArray);
+    }, []);
+
+    useEffect(() => {
+        const uid = auth().currentUser?.uid;
+        fetch(`http://localhost:8080/api/patients/${uid}`)
+            .then(res => res.json())
+            .then(patient => {
+                if (name == "" && patient.name != null) dispatch(onChangeName(patient.name))
+                if (phone == "" && patient.phone != null) dispatch(onChangeGender(patient.phone))
+            })
     }, []);
 
     return (
@@ -97,7 +107,7 @@ const PatientInput = memo(function PatientInput() {
                             fontFamily: "Helvetica Neue",
                             color: '#2c2c2c',
                         }}>
-                            {` ${birthDateState.getDate()}/${birthDateState.getMonth() + 1}/${birthDateState.getFullYear()}`}
+                            {birthDate != "" && ` ${birthDateState.getDate()}/${birthDateState.getMonth() + 1}/${birthDateState.getFullYear()}`}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -146,29 +156,6 @@ const PatientInput = memo(function PatientInput() {
                     })}
                 </View>
             </View>
-
-            <View style={[styles.fieldInputContainer, {
-                height: 141,
-            }]}>
-                <Text
-                    style={[styles.labelInput,{
-                        width: 500,
-                    }]}
-                >Những gì chúng tôi cần biết thêm</Text>
-                <TextInput
-                    editable
-                    maxLength={35}
-                    onChangeText={ (text) => {
-                        dispatch(onChangeAdditionalInfo(text))
-                    }}
-                    value={additionalInfo}
-                    style={[styles.textInput,{
-                        height: 100,
-
-                    }]}
-                />
-            </View>
-
 
 
         </View>

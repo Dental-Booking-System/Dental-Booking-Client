@@ -1,15 +1,17 @@
 import {Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import CloseIcon from "../assets/closeIcon.svg";
-import DateTimePicker from "../components/DateTimePicker.tsx";
+import AppointmentInput from "../components/AppointmentInput.tsx";
 import PatientInput from "../components/PatientInput.tsx";
-import ServiceInput from "../components/ServiceInput.tsx";
 import React, {memo, SetStateAction, useCallback, useEffect, useState} from "react";
 import {colors} from "../theme/colors.ts";
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import LoadingModal from "../components/modals/LoadingModal.tsx";
-
+import Animated from "react-native-reanimated";
+import AlertModal from "../components/modals/AlertModal.tsx";
+import {localeDateStringToISODateString} from "../utils/DateFormatter.ts";
+import ConfirmModal from "../components/modals/ConfirmModal.tsx";
 
 type Props = {
     toggleSheet: () => void;
@@ -17,106 +19,69 @@ type Props = {
 
 function Appointment(props: Props) {
 
+    const [showConfirm, setShowConfirm] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
-
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState("");
     /**
      * Appointment Info
      */
     const date = useSelector((state: RootState) => state.appointment.date);
     const time = useSelector((state: RootState) => state.appointment.time);
+    const service = useSelector((state: RootState) => state.appointment.service);
     const name = useSelector((state: RootState) => state.patient.name);
     const phone = useSelector((state: RootState) => state.patient.phone);
     const birthDate = useSelector((state: RootState) => state.patient.birthDate);
     const gender = useSelector((state: RootState) => state.patient.gender);
     const additionalInfo = useSelector((state: RootState) => state.appointment.additionalInfo);
-    const service = useSelector((state: RootState) => state.appointment.service);
 
-    /**
-     * Phone OTP
-     */
-    // If null, no SMS has been sent
-    const [confirm, setConfirm] = useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
-
-    // verification code (OTP - One-Time-Passcode)
-    const [code, setCode] = useState('');
-    //
-    function onAuthStateChanged(user: any) {
-        if (user) {
-            // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
-            // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
-            // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
-            // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
+    const validateInput = () => {
+        if (!date || !time || !service) {
+            return ({complete: false, alert: "Xin vui lòng điền thời gian đặt lịch và dịch vụ."});
         }
-    }
-
-    useEffect(() => {
-        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-        return subscriber; // unsubscribe on unmount
-    }, []);
-
-    // Handle the button press
-    async function signInWithPhoneNumber(phoneNumber: any) {
-        try {
-            const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-            setConfirm(confirmation);
-        } catch(err) {
-            console.log(err);
+        if  (!name || !phone || !birthDate || !gender) {
+            return ({complete: false, alert: "Xin vui lòng điền đầy đủ thông tin cá nhân."});
         }
-    }
-
-    async function confirmCode() {
-        try {
-            if (confirm) await confirm.confirm(code);
-        } catch (error) {
-            console.log('Invalid code.');
-        }
+        return ({complete: true, alert: "none"});
     }
 
     /**
-     * Submit appointment and phone OTP
+     * Submit appointment
      */
-    async function handleSubmit() {
-        // Check if phone is registered
-        // signInWithPhoneNumber(phone).then(() => {
-        //     setShowLoading(false);
-        // });
-        // signInWithPhoneNumber(phone);
-        // console.log({
-        //     date: date,
-        //     time: time,
-        //     service: service,
-        //     name: name,
-        //     phone: phone,
-        //     birthDate: birthDate,
-        //     gender: gender,
-        //     additionalInfo: additionalInfo
-        // })
-        const isRegistered = await checkRegisteredPhoneNumber(phone);
-        if (!isRegistered) {
-            await signInWithPhoneNumber(phone);
-            console.log(auth().currentUser?.uid);
-            return
+     function handleSubmit() {
+         const input = validateInput()
+         if (!input.complete){
+             setAlertText(input.alert);
+            setShowAlert(true);
+            return null
         }
-        console.log(auth().currentUser?.uid);
+         setShowLoading(true);
+         const url = "http://localhost:8080/api/appointments";
+         const appointmentData = {
+             patient_uid: auth().currentUser?.uid,
+             doctor_id: 1,
+             dental_service_id: Number(service.key),
+             start_time: `${date}T${time}`,
+         };
+         return fetch(url, {
+             method: 'POST',
+             headers: {
+                 Accept: 'application/json',
+                 'Content-Type': 'application/json',
+             },
+             body: JSON.stringify(appointmentData)
+         })
+             .then((res) => {
+                 if (!res.ok) throw new Error("Time not available");
+             })
+             .catch(err => {
+                 console.log(err)
+             })
+             .finally(() => {
+                 setShowLoading(false);
+             })
+
     }
-
-    async function checkRegisteredPhoneNumber(phoneNumber: string) {
-        return fetch(`http://localhost:8080/api/check-phone-number?phoneNumber=${phone.substring(1)}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => response.json())
-            .then((json) => {
-               return json;
-            })
-            .catch((err) => {
-                throw err;
-            });
-    }
-
-
     return (
         <View style={styles.appointmentContainer}>
             <View style={styles.appointmentHeader}>
@@ -124,10 +89,10 @@ function Appointment(props: Props) {
                     style={{
                         fontSize: 28,
                         fontFamily: "Helvetica Neue",
-                        fontStyle: "italic",
                         flexWrap: "wrap"
                     }}
-                >Đặt lịch hẹn</Text>
+                >
+                    Đặt lịch hẹn</Text>
                 <TouchableOpacity
                     onPress={props.toggleSheet}
                     style={{
@@ -145,12 +110,13 @@ function Appointment(props: Props) {
                 style={styles.scrollViewContainer}
                 contentContainerStyle={styles.scrollViewContentContainer}
             >
-                <DateTimePicker />
-                <ServiceInput />
+                <AppointmentInput />
                 <PatientInput />
-
                 <TouchableOpacity
-                    onPress={() => handleSubmit()}
+                    onPress={() => {
+                        handleSubmit()
+                        setShowConfirm(true)
+                    }}
                 >
                     <View style={{
                         backgroundColor: colors.primary,
@@ -173,15 +139,15 @@ function Appointment(props: Props) {
                         </Text>
                     </View>
                 </TouchableOpacity>
-                {confirm && (
-                    <>
-                        <TextInput value={code} onChangeText={text => setCode(text)} />
-                        <Button title="Confirm Code" onPress={() => confirmCode()} />
-                    </>
-                )}
-                <LoadingModal isVisible={showLoading}/>
             </ScrollView>
+            <ConfirmModal isVisible={showConfirm} setIsVisible={setShowConfirm}/>
+            <LoadingModal isVisible={showLoading} text={"Xử lí lịch hẹn"}/>
 
+            <AlertModal
+                isVisible={showAlert}
+                setIsVisible={setShowAlert}
+                text={alertText}
+            />
         </View>
     )
 }
@@ -208,11 +174,11 @@ const styles = StyleSheet.create({
         // borderWidth: 1,
         height: "90%",
         bottom: "8%",
-        flex: 1
+        flex: 1,
     },
 
     scrollViewContentContainer: {
-        flexGrow: 1
+        flexGrow: 1,
     },
 
     nameContainer: {

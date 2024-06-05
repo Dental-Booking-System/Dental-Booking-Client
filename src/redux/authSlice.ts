@@ -1,11 +1,13 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import auth from "@react-native-firebase/auth";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
 
 interface authState {
-    isLoggedIn: boolean
+    isLoggedIn: boolean,
 }
 
 const initialState: authState = {
-    isLoggedIn: false
+    isLoggedIn: false,
 }
 
 const authSlice = createSlice({
@@ -17,12 +19,12 @@ const authSlice = createSlice({
         },
         logOut: (state) => {
             state.isLoggedIn = false
-        }
+        },
     }
 })
 
 export const {
     logOut,
-    logIn
+    logIn,
 } = authSlice.actions;
 export default authSlice.reducer;

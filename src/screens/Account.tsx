@@ -3,9 +3,25 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {colors} from "../theme/colors.ts";
 import {useDispatch} from "react-redux";
 import {logOut} from "../redux/authSlice.ts";
+import auth from "@react-native-firebase/auth";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import {reset} from "../redux/patientSlice.ts";
 
 function Account() {
     const dispatch = useDispatch();
+
+    function signOut() {
+        auth().signOut().then(async () => {
+            await GoogleSignin.revokeAccess();
+            dispatch(reset());
+            console.log("Sign out successfully!");
+        }).catch(err => {
+            if (auth().currentUser == null) {
+                dispatch(logOut());
+            }
+        });
+    }
+
     return (
         <View style={styles.profileContainer}>
             <TouchableOpacity
@@ -17,7 +33,7 @@ function Account() {
                     borderRadius: 12,
                     backgroundColor: colors.primary
                 }}
-                onPress={() => dispatch(logOut())}
+                onPress={() => signOut()}
             >
                 <Text
                     style={{

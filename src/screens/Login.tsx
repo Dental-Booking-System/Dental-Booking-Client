@@ -1,44 +1,50 @@
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import React, {useState} from "react";
 import {colors} from "../theme/colors.ts";
 import GoogleIcon from "../assets/googleIcon.svg";
 import PersonIcon from "../assets/personIcon.svg";
-import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import auth, {firebase, FirebaseAuthTypes} from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import {logIn} from "../redux/authSlice.ts";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import LoadingModal from "../components/modals/LoadingModal.tsx";
 
+type Props = NativeStackScreenProps<{
+    PhoneLogin: {}
+}>;
 
 GoogleSignin.configure({
     webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
 });
 
 
-function Login() {
+function Login({navigation} : Props) {
 
     const dispatch = useDispatch();
-
+    const [showLoading, setShowLoading] = useState(false);
+    /**
+     * Google sign-in
+     */
     async function signInWithGoogle() {
         try {
-            const { idToken } = await GoogleSignin.signIn();
+            const {idToken} = await GoogleSignin.signIn();
+            setShowLoading(true);
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             await auth().signInWithCredential(googleCredential);
-            console.log("id token: " + idToken);
-            console.log(googleCredential);
-
+            setShowLoading(false);
         } catch (err) {
-            throw err;
+            setShowLoading(false);
+            console.log(err)
         }
     }
 
-    async function signIn() {
-        try {
-            await signInWithGoogle();
-            dispatch(logIn());
-        } catch (err) {
-            console.log(err);
-        }
+    /**
+     * Phone sign-in
+     */
+    async function signInWithPhone() {
+        navigation.navigate('PhoneLogin', {})
     }
 
     return (
@@ -46,7 +52,7 @@ function Login() {
             <TouchableOpacity
                 style={styles.buttonStyle}
                 onPress={async () => {
-                    await signIn();
+                    await signInWithGoogle();
                 }}
             >
                 <GoogleIcon
@@ -56,7 +62,7 @@ function Login() {
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.buttonStyle}
-                onPress={() => dispatch(logIn())}
+                onPress={() => signInWithPhone()}
             >
                 <PersonIcon style={{
                 }} height={45} width={30}/>
@@ -74,6 +80,8 @@ function Login() {
                     fontSize: 13.5
                 }]}>Đăng nhập ẩn danh</Text>
             </TouchableOpacity>
+            <LoadingModal isVisible={showLoading} text={"Đang đăng nhập"} />
+
         </View>
     )
 }
@@ -84,7 +92,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        gap: 12
+        gap: 12,
+        backgroundColor: 'white'
     },
     buttonStyle: {
         backgroundColor: 'white',

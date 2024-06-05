@@ -3,7 +3,11 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 interface AppointmentState {
     date: string,
     time: string,
-    service: string,
+    service: {
+        key: string,
+        value: string,
+        approxDuration: number
+    },
     name: string,
     phone: string,
     gender: string,
@@ -13,7 +17,11 @@ interface AppointmentState {
 const initialState: AppointmentState = {
     date: "",
     time: "",
-    service: "",
+    service: {
+        key: "",
+        value: "",
+        approxDuration: 0
+    },
     name: "",
     phone: "",
     gender: "",
@@ -30,7 +38,11 @@ const appointmentSlice = createSlice({
         onChangeTime: (state, action: PayloadAction<string>) => {
             state.time = action.payload;
         },
-        onChangeService: (state, action: PayloadAction<string>) => {
+        onChangeService: (state, action: PayloadAction<{
+            key: string,
+            value: string,
+            approxDuration: number
+        }>) => {
             state.service = action.payload;
         },
         onChangeAdditionalInfo: (state, action: PayloadAction<string>) => {

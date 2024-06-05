@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import auth from "@react-native-firebase/auth";
 
 interface patientState {
     name: string,
@@ -30,7 +31,9 @@ const patientSlice = createSlice({
         onChangeGender: (state, action: PayloadAction<string>) => {
             state.gender = action.payload;
         },
-        
+        reset: (state) => {
+            Object.assign(state, initialState);
+        }
     }
 })
 
@@ -38,6 +41,7 @@ export const {
     onChangeName,
     onChangePhone,
     onChangeBirthDate,
-    onChangeGender
+    onChangeGender,
+    reset
 } = patientSlice.actions;
 export default patientSlice.reducer;

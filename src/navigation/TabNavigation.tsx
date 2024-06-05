@@ -111,8 +111,9 @@ const styles = StyleSheet.create({
     },
 
     tabLabel: {
-        fontSize: 13.5,
+        fontSize: 13,
         fontFamily: 'Helvetica Neue',
+        fontWeight: '600'
     },
 
     tabContainer: {
@@ -140,7 +141,8 @@ const styles = StyleSheet.create({
     calendarTabLabel: {
         fontSize: 14,
         fontFamily: 'Helvetica Neue',
-        paddingTop: 7
+        paddingTop: 7,
+        fontWeight: '600'
     },
 })
 
