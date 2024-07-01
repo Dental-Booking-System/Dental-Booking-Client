@@ -1,17 +1,16 @@
-import {Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import CloseIcon from "../assets/closeIcon.svg";
 import AppointmentInput from "../components/AppointmentInput.tsx";
 import PatientInput from "../components/PatientInput.tsx";
-import React, {memo, SetStateAction, useCallback, useEffect, useState} from "react";
+import React, {useState} from "react";
 import {colors} from "../theme/colors.ts";
-import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import {useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import LoadingModal from "../components/modals/LoadingModal.tsx";
-import Animated from "react-native-reanimated";
 import AlertModal from "../components/modals/AlertModal.tsx";
-import {localeDateStringToISODateString} from "../utils/DateFormatter.ts";
-import ConfirmModal from "../components/modals/ConfirmModal.tsx";
+import CheckIcon from "../assets/checkIcon.svg";
+import Animated, {SlideInRight} from "react-native-reanimated";
 
 type Props = {
     toggleSheet: () => void;
@@ -48,39 +47,45 @@ function Appointment(props: Props) {
     /**
      * Submit appointment
      */
-     function handleSubmit() {
+     async function submit() {
          const input = validateInput()
          if (!input.complete){
-             setAlertText(input.alert);
-            setShowAlert(true);
-            return null
+             throw new Error(input.alert)
         }
-         setShowLoading(true);
-         const url = "http://localhost:8080/api/appointments";
+         const url = `${process.env.BASE_URL}/api/appointments`;
          const appointmentData = {
              patient_uid: auth().currentUser?.uid,
              doctor_id: 1,
              dental_service_id: Number(service.key),
              start_time: `${date}T${time}`,
          };
-         return fetch(url, {
+         const res = await  fetch(url, {
              method: 'POST',
              headers: {
                  Accept: 'application/json',
                  'Content-Type': 'application/json',
+                 'Authorization' : `Bearer ${await auth().currentUser?.getIdToken()}`
              },
              body: JSON.stringify(appointmentData)
          })
-             .then((res) => {
-                 if (!res.ok) throw new Error("Time not available");
-             })
-             .catch(err => {
-                 console.log(err)
-             })
-             .finally(() => {
-                 setShowLoading(false);
-             })
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+         if (!res.ok) {
+             throw new Error("Thời gian này hiện không có."); // Use server message or fallback
+         }
+    }
 
+    async function handleSubmit() {
+         setShowLoading(true);
+         try {
+             await submit();
+             setShowConfirm(true);
+         } catch (err) {
+             // @ts-ignore
+             setAlertText(err.message);
+             setShowAlert(true);
+         } finally {
+             setShowLoading(false);
+         }
     }
     return (
         <View style={styles.appointmentContainer}>
@@ -105,49 +110,112 @@ function Appointment(props: Props) {
                     />
                 </TouchableOpacity>
             </View>
-            <ScrollView
-                horizontal={false}
-                style={styles.scrollViewContainer}
-                contentContainerStyle={styles.scrollViewContentContainer}
-            >
-                <AppointmentInput />
-                <PatientInput />
-                <TouchableOpacity
-                    onPress={() => {
-                        handleSubmit()
-                        setShowConfirm(true)
+            {!showConfirm ?
+                <>
+                    <ScrollView
+                        horizontal={false}
+                        style={styles.scrollViewContainer}
+                        contentContainerStyle={styles.scrollViewContentContainer}
+                    >
+                        <AppointmentInput />
+                        <PatientInput />
+                        <TouchableOpacity
+                            onPress={async () => {
+                                await handleSubmit();
+                            }}
+                        >
+                            <View style={{
+                                backgroundColor: colors.primary,
+                                height: 50,
+                                borderRadius: 15,
+                                width: '85%',
+                                alignSelf: "center",
+                                marginTop: "10%",
+                                justifyContent: "center"
+                            }}>
+                                <Text style={{
+                                    alignSelf: "center",
+                                    color: "white",
+                                    fontSize: 18,
+                                    fontWeight: "400",
+                                    fontFamily: "Helvetica Neue",
+                                    fontStyle: "italic"
+                                }}>
+                                    Đặt lịch
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </ScrollView>
+
+                </>
+                :
+                <Animated.View
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                     }}
+                    entering={SlideInRight.springify().damping(18)}
                 >
                     <View style={{
-                        backgroundColor: colors.primary,
-                        height: 50,
-                        borderRadius: 15,
-                        width: '85%',
-                        alignSelf: "center",
-                        marginTop: "10%",
-                        justifyContent: "center"
+                        alignItems: 'center',
+                        width: '100%',
+                        bottom: '20%'
                     }}>
-                        <Text style={{
-                            alignSelf: "center",
-                            color: "white",
-                            fontSize: 18,
-                            fontWeight: "400",
-                            fontFamily: "Helvetica Neue",
-                            fontStyle: "italic"
+                        <CheckIcon
+                            width={150}
+                            height={150}
+                            fill={'green'}
+                        />
+                        <View style={{
+                            alignItems: 'center',
+                            gap: 10
                         }}>
-                            Đặt lịch
-                        </Text>
+                            <Text style={{
+                                fontWeight: '600',
+                                fontSize: 20,
+                                fontFamily: 'Helvetica Neue'
+                            }}>
+                                Đặt lịch thành công!
+                            </Text>
+                            <Text style={{
+                                fontWeight: '400',
+                                fontSize: 15,
+                                fontFamily: 'Helvetica Neue'
+                            }}>
+                                Chúng tôi đã gửi đơn xác nhận đến email/số điện thoại của bạn.
+                                Bạn có thể quản lý lịch hẹn tại đây.
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            style={{
+                                borderRadius: 10,
+                                height: "15%",
+                                width: '45%',
+                                justifyContent: "center",
+                                backgroundColor: '#09000',
+                                marginTop: '10%',
+                            }}
+                        >
+                            <Text style={{
+                                alignSelf: "center",
+                                fontSize: 15,
+                                color: 'white',
+                                fontWeight: '600',
+                                fontFamily: 'Helvetica Neue'
+                            }}>
+                                Quản lý lịch hẹn
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
-            </ScrollView>
-            <ConfirmModal isVisible={showConfirm} setIsVisible={setShowConfirm}/>
-            <LoadingModal isVisible={showLoading} text={"Xử lí lịch hẹn"}/>
-
+                </Animated.View>
+            }
             <AlertModal
                 isVisible={showAlert}
                 setIsVisible={setShowAlert}
                 text={alertText}
             />
+            <LoadingModal text={"Xử lý lịch hẹn"} isVisible={showLoading} />
         </View>
     )
 }
@@ -158,7 +226,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         paddingHorizontal: '5%',
         paddingTop: "8%",
-        flex: 1
+        flex: 1,
     },
 
     appointmentHeader: {

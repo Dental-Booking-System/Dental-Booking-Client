@@ -2,35 +2,37 @@ import {Modal, StyleSheet, View, ActivityIndicator, Text} from "react-native";
 import React from "react";
 
 type Props = {
-    isVisible: boolean,
+    isVisible?: boolean,
     text: string
 }
 
 function LoadingModal(props: Props) {
     return (
-        <Modal
-            animationType="fade"
-            transparent={true}
-            visible={props.isVisible}
-            statusBarTranslucent={false}
-        >
-            <View style={styles.modalContainer}>
-                <ActivityIndicator size={"large"} color={'white'}/>
-                <Text
-                    style={{
-                        marginVertical: 15,
-                        fontSize: 20,
-                        textAlign: 'center',
-                        fontWeight: '500',
-                        fontStyle: 'italic',
-                        color: 'white'
-                    }}
-                >
-                    {props.text}
-                </Text>
-            </View>
+        <View>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={props.isVisible}
+            >
+                <View style={styles.modalContainer}>
+                    <ActivityIndicator size={"large"} color={'white'}/>
+                    <Text
+                        style={{
+                            marginVertical: 15,
+                            fontSize: 20,
+                            textAlign: 'center',
+                            fontWeight: '500',
+                            fontStyle: 'italic',
+                            color: 'white'
+                        }}
+                    >
+                        {props.text}
+                    </Text>
+                </View>
 
-        </Modal>
+            </Modal>
+        </View>
+
     )
 }
 

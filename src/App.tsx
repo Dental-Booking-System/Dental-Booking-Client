@@ -20,7 +20,6 @@ import {
     SlideInData
 } from "react-native-reanimated/lib/typescript/reanimated2/layoutReanimation/web/animation/Slide.web";
 import LoginPrompt from "./components/modals/LoginPrompt.tsx";
-import ConfirmModal from "./components/modals/ConfirmModal.tsx";
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state.']);
 
 
@@ -66,13 +65,14 @@ function App(): React.JSX.Element | null {
     }));
 
     // Handle user state changes
-    function onAuthStateChanged(user: any) {
+     async function onAuthStateChanged(user: any) {
         if (user){
-            fetch("http://localhost:8080/api/patients", {
+            fetch(`${process.env.BASE_URL}/api/patients`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
+                    'Authorization': `${await auth().currentUser?.getIdToken()}`
                 },
                 body: JSON.stringify({
                     uid: user.uid,

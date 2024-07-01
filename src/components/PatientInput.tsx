@@ -48,12 +48,20 @@ const PatientInput = memo(function PatientInput() {
 
     useEffect(() => {
         const uid = auth().currentUser?.uid;
-        fetch(`http://localhost:8080/api/patients/${uid}`)
-            .then(res => res.json())
-            .then(patient => {
-                if (name == "" && patient.name != null) dispatch(onChangeName(patient.name))
-                if (phone == "" && patient.phone != null) dispatch(onChangeGender(patient.phone))
+        auth().currentUser?.getIdToken().then(token => {
+            fetch(`${process.env.BASE_URL}/api/patients/${uid}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             })
+                .then(res => res.json())
+                .then(patient => {
+                    if (name == "" && patient.name != null) dispatch(onChangeName(patient.name))
+                    if (phone == "" && patient.phone != null) dispatch(onChangeGender(patient.phone))
+                })
+        }).catch(err => {
+            console.log(err)
+        })
     }, []);
 
     return (

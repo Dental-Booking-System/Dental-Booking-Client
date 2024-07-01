@@ -11,6 +11,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {isoTimeToLocalTimeString, localeDateStringToISODateString} from "../utils/DateFormatter.ts";
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {SelectList} from "react-native-dropdown-select-list";
+import auth from "@react-native-firebase/auth";
 
 const AppointmentInput = memo(function DateTimePicker() {
     const [dateState, setDateState] = useState(new Date());
@@ -64,7 +65,11 @@ const AppointmentInput = memo(function DateTimePicker() {
         const localeISODate = localeDateStringToISODateString(date.toLocaleDateString());
         try {
             await sleep(500);
-            const res = await fetch(`http://localhost:8080/api/appointments/available-times?date=${localeISODate}&duration=${service.approxDuration}`);
+            const res = await fetch(`${process.env.BASE_URL}/api/appointments/available-times?date=${localeISODate}&duration=${service.approxDuration}`, {
+                headers: {
+                    "Authorization": `Bearer ${await auth().currentUser?.getIdToken()}`
+                }
+            });
             return await res.json();
         } catch (err) {
             console.log(err);
@@ -125,23 +130,33 @@ const AppointmentInput = memo(function DateTimePicker() {
         dispatch(onChangeDate(localeDateStringToISODateString(dateState.toLocaleDateString())));
     }, []);
 
-    useEffect(() => {
-        fetch("http://localhost:8080/api/dental-services").then(res => {
-            res.json().then(data => {
-                let updatedServices: { key: any; value: any; approxDuration: number }[] = []
-                data.forEach((serviceItem : any) => {
-                    updatedServices.push({
-                        key: serviceItem.id.toString(),
-                        value: serviceItem.name,
-                        approxDuration: serviceItem.approxDuration
+    useEffect( () =>  {
+        auth().currentUser?.getIdToken().then(token => {
+            fetch(`${process.env.BASE_URL}/api/dental-services`,{
+                headers: {
+                    'Authorization' : `Bearer ${token}`
+                }
+            }).then(res => {
+                res.json().then(data => {
+                    let updatedServices: { key: any; value: any; approxDuration: number }[] = []
+                    data.forEach((serviceItem : any) => {
+                        updatedServices.push({
+                            key: serviceItem.id.toString(),
+                            value: serviceItem.name,
+                            approxDuration: serviceItem.approxDuration
+                        })
                     })
+                    setServiceArrayState(updatedServices);
                 })
-                setServiceArrayState(updatedServices);
             })
+                .catch(err => {
+                    console.log(err)
+                })
         })
             .catch(err => {
                 console.log(err)
             })
+
     }, []);
 
     return (
