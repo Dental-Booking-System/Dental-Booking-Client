@@ -8,7 +8,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import {onChangeDate, onChangeService, onChangeTime} from "../redux/appointmentSlice.ts";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import {isoTimeToLocalTimeString, localeDateStringToISODateString} from "../utils/DateFormatter.ts";
+import {
+    isoTimeToLocalTimeString,
+    localeDateStringToISODateString,
+    toVietnamDateString
+} from "../utils/DateFormatter.ts";
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {SelectList} from "react-native-dropdown-select-list";
 import auth from "@react-native-firebase/auth";
@@ -39,7 +43,7 @@ const AppointmentInput = memo(function DateTimePicker() {
         });
         setDaysArray(updatedDaysArray);
         setDateState(chosenDate);
-        dispatch(onChangeDate(localeDateStringToISODateString(chosenDate.toLocaleDateString())));
+        dispatch(onChangeDate(toVietnamDateString(chosenDate)));
     };
 
     const handleTimePress = (selectedTime: string) => {
@@ -62,10 +66,10 @@ const AppointmentInput = memo(function DateTimePicker() {
     const fetchAvailableTime = async (date: Date, service: { key: string; value: string; approxDuration: number }) => {
         setIsFetchingTime(true)
         const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-        const localeISODate = localeDateStringToISODateString(date.toLocaleDateString());
+        const localDate = toVietnamDateString(date)
         try {
             await sleep(500);
-            const res = await fetch(`${process.env.BASE_URL}/api/appointments/available-times?date=${localeISODate}&duration=${service.approxDuration}`, {
+            const res = await fetch(`${process.env.BASE_URL}/api/appointments/available-times?date=${localDate}&duration=${service.approxDuration}`, {
                 headers: {
                     "Authorization": `Bearer ${await auth().currentUser?.getIdToken()}`
                 }
@@ -127,7 +131,7 @@ const AppointmentInput = memo(function DateTimePicker() {
     }, [dateState, serviceState]);
 
     useEffect(() => {
-        dispatch(onChangeDate(localeDateStringToISODateString(dateState.toLocaleDateString())));
+        dispatch(onChangeDate(toVietnamDateString(dateState)));
     }, []);
 
     useEffect( () =>  {
@@ -225,7 +229,7 @@ const AppointmentInput = memo(function DateTimePicker() {
                     onConfirm={(date) => {
                         setDateState(date);
                         setOpen(false);
-                        dispatch(onChangeDate(localeDateStringToISODateString(date.toLocaleDateString())));
+                        dispatch(onChangeDate(toVietnamDateString(date)));
                     }}
                     onCancel={() => {
                         setOpen(false);

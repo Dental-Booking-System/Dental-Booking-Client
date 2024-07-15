@@ -57,7 +57,7 @@ function Appointment(props: Props) {
              patient_uid: auth().currentUser?.uid,
              doctor_id: 1,
              dental_service_id: Number(service.key),
-             start_time: `${date}T${time}`,
+             start: `${date}T${time}`,
          };
          const res = await  fetch(url, {
              method: 'POST',
@@ -68,7 +68,7 @@ function Appointment(props: Props) {
              },
              body: JSON.stringify(appointmentData)
          })
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+         await new Promise((resolve) => setTimeout(resolve, 1000));
          if (!res.ok) {
              throw new Error("Thời gian này hiện không có."); // Use server message or fallback
          }
