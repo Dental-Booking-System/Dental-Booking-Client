@@ -1,6 +1,8 @@
 # 🦷 Dental Booking Client - React Native
 
-A cross-platform **React Native mobile application** that simplifies appointment booking and dental clinic management. This app allows patients to log in, browse dental profiles, and schedule appointments conveniently through their mobile devices.
+The **Dental Booking Client** is a cross-platform mobile application built with **React Native** that streamlines appointment booking and dental clinic management. Patients can easily log in, browse dental profiles, and schedule appointments right from their mobile devices. 
+
+For more information, visit the organization page: [Dental Booking System](https://github.com/Dental-Booking-System).
 
 ## ✨ Features
 
