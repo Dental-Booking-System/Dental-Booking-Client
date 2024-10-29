@@ -12,7 +12,7 @@ A cross-platform **React Native mobile application** that simplifies appointment
 ## 🛠️ Tech Stack
 
 - **Framework**: React Native
-- **State Management**: React Context API / Redux (if applicable)  
+- **State Management**: Redux 
 - **Authentication**: Google API with Firebase
 - **API Communication**: Fetch API
 
