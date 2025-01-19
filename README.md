@@ -1,24 +1,24 @@
-# 🦷 Dental Booking Client - React Native
+# Dental Booking Client - React Native
 
 The **Dental Booking Client** is a cross-platform mobile application built with **React Native** that streamlines appointment booking and dental clinic management. Patients can easily log in, browse dental profiles, and schedule appointments right from their mobile devices. 
 
 For more information, visit the organization page: [Dental Booking System](https://github.com/Dental-Booking-System).
 
-## ✨ Features
+## Features
 
 - **User Authentication**: Secure login for patients to access their profiles.
 - **Browse Dental Profiles**: View detailed information about dentists and specialists.
 - **Appointment Booking**: Schedule, manage, and cancel appointments directly in the app.
 - **Appointment History**: Track past appointments and upcoming bookings.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: React Native
 - **State Management**: Redux 
 - **Authentication**: Google API with Firebase
 - **API Communication**: Fetch API
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites  
 Make sure you have the following installed:
@@ -52,10 +52,10 @@ Make sure you have the following installed:
    npm run ios       # For iOS
    ```
 
-## 🌐 Backend Server
+## Backend Server
 
 This app communicates with a **Spring Boot backend** for authentication, booking management, and MySQL data storage. [Visit Backend Repository](https://github.com/Dental-Booking-System/dental-booking-server).
 
-## 🧑‍💻 Contributors
+## Contributors
 
 - **Tony Vu** – [LinkedIn](https://linkedin.com/in/duyquocvu) | [GitHub](https://github.com/quocduyvu6262)
